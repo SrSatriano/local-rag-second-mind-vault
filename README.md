@@ -1,77 +1,117 @@
-# Local RAG "Second Mind" Vault
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.0-blue" alt="version" />
-  <img src="https://img.shields.io/badge/license-MIT-green" alt="license" />
-  <img src="https://img.shields.io/badge/status-production--ready-brightgreen" alt="status" />
-  <img src="https://img.shields.io/badge/CI-passing-success" alt="ci" />
+# Cofre RAG local "Second Mind"
+
+**Cofre RAG local Second Mind**
+
+<p>
+  <a href="https://github.com/SrSatriano/local-rag-second-mind-vault"><img src="https://img.shields.io/badge/GitHub-local-rag-second-mind-vault-24292e?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
 </p>
 
-> **RAG 100% offline com Ollama e ChromaDB — privacidade total.**
+<p>
+  <img src="https://img.shields.io/badge/versão-1.0.0-0ea5e9?style=flat-square" alt="versão" />
+  <img src="https://img.shields.io/badge/licença-MIT-22c55e?style=flat-square" alt="licença" />
+  <img src="https://img.shields.io/badge/idioma-pt--BR-blue?style=flat-square" alt="idioma" />
+  <img src="https://img.shields.io/badge/CI-GitHub_Actions-8b5cf6?style=flat-square" alt="ci" />
+</p>
 
-Desenvolvido e mantido por [@SrSatriano](https://github.com/SrSatriano). Repositório: [local-rag-second-mind-vault](https://github.com/SrSatriano/local-rag-second-mind-vault).
+<p><strong>Perguntas e respostas 100% offline com Ollama — seus documentos nunca saem da máquina.</strong></p>
+
+<p>
+  Autor: <a href="https://github.com/SrSatriano">@SrSatriano</a> ·
+  Release <strong>1.0.0</strong> (2026-03-26)
+</p>
+
+</div>
 
 ---
 
 ## Índice
 
-- [Visão geral](#visão-geral)
-- [Funcionalidades](#funcionalidades)
-- [Stack](#stack)
-- [Arquitetura](#arquitetura)
-- [Início rápido](#início-rápido)
-- [Configuração](#configuração)
-- [Testes](#testes)
-- [Performance](#performance)
-- [Deploy](#deploy)
-- [Documentação](#documentação)
-- [Segurança](#segurança)
-- [Changelog](#changelog)
-- [Licença](#licença)
+1. [Visão geral](#visão-geral)
+2. [Problema e solução](#problema-e-solução)
+3. [Para quem é](#para-quem-é)
+4. [Casos de uso](#casos-de-uso)
+5. [Funcionalidades](#funcionalidades)
+6. [Stack tecnológica](#stack-tecnológica)
+7. [Arquitetura](#arquitetura)
+8. [Estrutura do repositório](#estrutura-do-repositório)
+9. [Pré-requisitos](#pré-requisitos)
+10. [Instalação e execução](#instalação-e-execução)
+11. [Configuração](#configuração)
+12. [Testes](#testes)
+13. [Performance](#performance)
+14. [Deploy e operação](#deploy-e-operação)
+15. [Limitações conhecidas](#limitações-conhecidas)
+16. [Roadmap](#roadmap)
+17. [Documentação complementar](#documentação-complementar)
+18. [Segurança e licença](#segurança-e-licença)
 
 ---
 
 ## Visão geral
 
-Este projeto entrega uma solução **completa e pronta para produção** (1.0.0) para o domínio descrito no título. A arquitetura foi desenhada para **alta performance**, **observabilidade** e **operabilidade** em ambientes reais — desde desenvolvimento local até deploy em cluster ou bare metal.
+Este repositório faz parte do **portfólio de engenharia** mantido por [@SrSatriano](https://github.com/SrSatriano). A versão **1.0.0** entrega implementação do núcleo do produto, testes automatizados, pipeline de integração contínua e documentação operacional em **português brasileiro**.
 
-O código inclui implementação do core, testes automatizados, pipelines CI e documentação operacional (runbooks, deploy e arquitetura).
+O objetivo é permitir que você clone, execute e evolua o projeto com clareza — do desenvolvimento local ao deploy em produção.
+
+## Problema e solução
+
+| | |
+|---|---|
+| **Problema** | Enviar documentos confidenciais para APIs na nuvem viola políticas de privacidade. |
+| **Solução** | Ingestão local, busca semântica e geração opcional via Ollama com citação de fontes. |
+
+## Para quem é
+
+Advogados, pesquisadores, PMEs e desenvolvedores que precisam de RAG privado.
+
+## Casos de uso
+
+- Base de conhecimento de contratos
+- Segunda memória para notas técnicas
 
 ## Funcionalidades
 
-- [x] Ingestão PDF/DOCX/MD com chunking semântico
-- [x] Embeddings locais sentence-transformers
-- [x] API FastAPI com citações de fonte
-- [x] Fallback anti-alucinação por score
-- [x] Deploy Docker one-command
+- [x] Endpoints REST de ingestão (texto e arquivo)
+- [x] Consulta com top-k e lista de fontes
+- [x] Modo offline sem LLM (contexto recuperado)
+- [x] Integração Ollama configurável por variáveis
+- [x] Docker Compose para deploy rápido
 
-## Stack
+## Stack tecnológica
 
-**Python, LangChain, ChromaDB, Ollama, FastAPI, Docker**
+| Camada | Tecnologias |
+|--------|-------------|
+| **Principal** | Python, FastAPI, ChromaDB, Ollama, Docker |
 
 ## Arquitetura
 
 ```mermaid
 flowchart TB
-  subgraph Clients
-    U[Operators / APIs]
-  end
-  subgraph Core
-    S[Service Layer]
-    E[Execution Engine]
-  end
-  subgraph Data
-    D[(Storage)]
-    M[Metrics]
-  end
-  U --> S --> E
-  E --> D
-  S --> M
+  ING[Ingestão PDF/MD] --> CH[Chunking]
+  CH --> EMB[Embeddings locais]
+  EMB --> VDB[(Vector store)]
+  API[FastAPI] --> RET[Recuperação + RAG]
+  RET --> VDB
+  RET --> LLM[Ollama opcional]
 ```
 
-Diagrama detalhado, decisões de design e escalabilidade: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Detalhamento de componentes, fluxos de dados e decisões de design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Início rápido
+## Estrutura do repositório
+
+| Caminho | Descrição |
+|---------|-----------|
+| `src/api/main.py` | API FastAPI |
+| `src/retrieval/chain.py` | Pipeline RAG |
+| `src/ingestion/` | Carregadores de documentos |
+
+## Pré-requisitos
+
+Python 3.11+, opcional: Ollama instalado para respostas generativas.
+
+## Instalação e execução
 
 ```bash
 git clone https://github.com/SrSatriano/local-rag-second-mind-vault.git
@@ -79,66 +119,71 @@ cd local-rag-second-mind-vault
 ```
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d
+pip install -r requirements.txt
+uvicorn src.api.main:app --reload
 ```
 
 ## Configuração
 
-| Variável / Arquivo | Descrição |
-|------------------|-----------|
-| `.env` / `config/` | Credenciais e endpoints (nunca commitar segredos) |
-| Documentação em `docs/` | Parâmetros avançados e tuning |
+| Variável | Descrição | Exemplo |
+|----------|-----------|--------|
+| `OLLAMA_HOST` | URL do Ollama | `http://localhost:11434` |
+| `LLM_MODEL` | Modelo local | `qwen2.5:7b` |
 
-Copie exemplos: `cp .env.example .env` ou `cp config/example.env .env` quando disponível.
+> **Importante:** nunca faça commit de arquivos `.env` com segredos reais. Use `.env.example` como referência.
 
 ## Testes
 
+Execute a suíte de testes antes de abrir pull requests:
+
 ```bash
-# Consulte o stack — exemplos:
-# Python: pytest
-# Node: npm test
-# Go: go test ./...
-# Rust: cargo test
-# Hardhat: npx hardhat test
-# C++: ctest ou ./build/*_test
+pytest tests/ -q
 ```
 
-A pipeline CI (`.github/workflows/ci.yml`) executa build e testes em cada push para `main`.
+A pipeline [`.github/workflows/ci.yml`](.github/workflows/ci.yml) repete build e testes em cada push para `main`.
 
 ## Performance
 
-| Modelo | Latência consulta |
-|--------|-------------------|
+| Modelo | Latência média de consulta |
+|--------|---------------------------|
 | Qwen 7B Q4 | 2–4 s |
 
-Metodologia completa e reprodução: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) e README de benchmarks quando aplicável.
+Metodologia, hardware de referência e flags de compilação: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Deploy
+## Deploy e operação
 
-Guia passo a passo: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)  
-Runbook de operação: [docs/OPERATIONS.md](docs/OPERATIONS.md)
+| Guia | Conteúdo |
+|------|----------|
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Homologação, produção e rollback |
+| [docs/OPERATIONS.md](docs/OPERATIONS.md) | Monitoramento, alertas e incidentes |
 
-## Documentação
+## Limitações conhecidas
 
-| Documento | Conteúdo |
-|-----------|----------|
-| [ARCHITECTURE](docs/ARCHITECTURE.md) | Guia técnico |
-| [DEPLOYMENT](docs/DEPLOYMENT.md) | Guia técnico |
-| [OPERATIONS](docs/OPERATIONS.md) | Guia técnico |
+- Vector store em memória na v1.0; use Chroma persistente em produção
+
+## Roadmap
+
+- Embeddings sentence-transformers
+- Suporte PDF nativo
+
+## Documentação complementar
+
+| Documento | Descrição |
+|-----------|-----------|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura e decisões técnicas |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy passo a passo |
+| [docs/OPERATIONS.md](docs/OPERATIONS.md) | Runbook operacional |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Como contribuir |
 | [CHANGELOG.md](CHANGELOG.md) | Histórico de versões |
 | [SECURITY.md](SECURITY.md) | Política de segurança |
+| [AUTHORS.md](AUTHORS.md) | Créditos |
 
-## Segurança
+## Segurança e licença
 
-- Dependências revisadas na release 1.0.0
-- Sem segredos no repositório
-- Reporte vulnerabilidades conforme [SECURITY.md](SECURITY.md)
+- Dependências revisadas na release **1.0.0**
+- Vulnerabilidades: siga [SECURITY.md](SECURITY.md)
+- Licença: [MIT](LICENSE) © SrSatriano 2026
 
-## Changelog
+---
 
-Ver [CHANGELOG.md](CHANGELOG.md) — release **1.0.0** (2026-03-26) com feature set completo.
-
-## Licença
-
-[MIT](LICENSE) © SrSatriano 2026
+<p align="center">Desenvolvido com foco em clareza e engenharia de produção · <a href="https://github.com/SrSatriano/local-rag-second-mind-vault">Ver no GitHub</a></p>
