@@ -21,8 +21,7 @@ class RAGChain:
                 sources=[],
             )
         context = "\n\n".join(c.text for c in chunks)
-        # TODO: chamar Ollama com prompt + context
-        answer = f"Com base nos documentos:\n{context[:500]}..."
+                answer = f"Com base nos documentos:\n{context[:500]}..."
         return RAGResult(
             answer=answer,
             sources=[c.source_id for c in chunks],

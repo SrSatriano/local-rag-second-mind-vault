@@ -9,7 +9,7 @@ class Chunk:
 
 
 class VectorStore:
-  """Wrapper Chroma — scaffold em memória."""
+  """Wrapper Chroma — armazenamento em memória com interface Chroma."""
 
   def __init__(self) -> None:
       self._chunks: list[Chunk] = []
