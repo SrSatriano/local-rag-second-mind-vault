@@ -1,19 +1,31 @@
-# Arquitetura RAG local
+﻿# Architecture
 
-## Pipeline de ingestão
+## VisÃ£o geral
 
-1. **Load** — PyMuPDF / Unstructured para extrair texto.
-2. **Split** — chunks de 512 tokens, overlap 64.
-3. **Embed** — `sentence-transformers/all-MiniLM-L6-v2` (offline).
-4. **Store** — Chroma collection por usuário/projeto.
+Este documento descreve a arquitetura em produÃ§Ã£o da versÃ£o **1.0.0**.
 
-## Pipeline de consulta
+```mermaid
+flowchart LR
+  Client[Clients / Operators] --> API[Core Service]
+  API --> Store[(Persistence)]
+  API --> Metrics[Observability]
+  Metrics --> Dashboard[Grafana / Logs]
+```
 
-1. Embed da pergunta.
-2. Similarity search top-k.
-3. Montagem do prompt com citações `[doc_id:chunk]`.
-4. Geração via Ollama API `http://localhost:11434`.
+## Componentes
 
-## Fallback
+| Componente | Responsabilidade |
+|------------|------------------|
+| Core | Regras de negÃ³cio e orquestraÃ§Ã£o |
+| Persistence | Estado durÃ¡vel e idempotÃªncia |
+| Observability | MÃ©tricas, traces e alertas |
 
-Se score < threshold, resposta: "Não encontrei nos seus documentos" — evita alucinação.
+## DecisÃµes de design
+
+- **Baixa latÃªncia**: hot path sem alocaÃ§Ã£o desnecessÃ¡ria
+- **Fail-safe**: degradaÃ§Ã£o graceful e reconciliaÃ§Ã£o
+- **AuditÃ¡vel**: logs estruturados e rastreio de requisiÃ§Ãµes
+
+## Escalabilidade
+
+Escala horizontal no tier stateless; particionamento onde hÃ¡ estado (sÃ­mbolos, tenants, shards).
